@@ -1,0 +1,47 @@
+# ============================================================================
+# Build & Output Directories
+# ============================================================================
+/build/
+/build_*/
+/out/
+/cmake-build-*/
+/CMakeUserPresets.json
+/dist/
+/.cache/
+
+# ============================================================================
+# External Prebuilt SDKs & Models (OBS Studio style `.deps/` isolation)
+# - `.deps/` stores auto-downloaded platform SDKs (CEF, ONNX Runtime).
+# - `third_party/` is 100% tracked by Git for lightweight source-level libs.
+# ============================================================================
+/.deps/
+/assets/models/*.onnx
+
+# ============================================================================
+# Python & Toolchain Environments (mise / uv / ruff / pytest)
+# ============================================================================
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+.ruff_cache/
+.pytest_cache/
+.mypy_cache/
+*.egg-info/
+.coverage
+htmlcov/
+
+# ============================================================================
+# IDE, OS & Runtime Artifacts
+# ============================================================================
+*.user
+.idea/
+.vscode/
+!.vscode/extensions.json
+.DS_Store
+Thumbs.db
+*.log
+sono.log
+bench-*.json
+selftest-*.json

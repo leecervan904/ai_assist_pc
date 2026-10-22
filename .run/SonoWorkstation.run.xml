@@ -1,0 +1,10 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="SonoWorkstation" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="SonoWorkstation" TARGET_NAME="SonoWorkstation" CONFIG_NAME="Release" RUN_TARGET_PROJECT_NAME="SonoWorkstation" RUN_TARGET_NAME="SonoWorkstation">
+    <envs>
+      <env name="PATH" value="C:\Qt\6.11.2\msvc2022_64\bin" />
+    </envs>
+    <method v="2">
+      <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+    </method>
+  </configuration>
+</component>

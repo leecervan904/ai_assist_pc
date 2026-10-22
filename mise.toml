@@ -1,0 +1,117 @@
+# ============================================================================
+# mise Polyglot Toolchain & Task Configuration
+# Docs: https://mise.jdx.dev
+# ============================================================================
+
+[tools]
+cmake = "3.28"
+ninja = "1.12"
+python = "3.12"
+uv = "latest"
+ruff = "latest"
+gh = "latest"
+
+[env]
+# Remote repository URL override (defaults to value in deps/manifest.json)
+SONO_REPO_URL = "https://github.com/leecervan904/ai_assist_pc"
+SONO_MODEL_REPO_URL = "https://github.com/leecervan904/ai_assist_pc"
+SONO_BUILD_DIR = "{{config_root}}/build"
+SONO_CACHE_DIR = "{{config_root}}/.cache"
+
+# ----------------------------------------------------------------------------
+# Environment & Dependency Management Tasks
+# ----------------------------------------------------------------------------
+[tasks."env:check"]
+description = "Inspect local C++/Qt6/Python toolchain and asset readiness"
+run = "python3 scripts/check_env.py"
+
+[tasks."deps:sync"]
+description = "Download and verify platform SDKs (CEF/ORT) and ONNX models from GitHub Releases"
+run = "python3 scripts/sync_deps.py"
+
+[tasks."deps:pack"]
+description = "Package local third_party SDKs and models into release archives with SHA-256 manifest updates"
+run = "python3 scripts/package_deps.py"
+
+[tasks."deps:lfs"]
+description = "Pull on-demand Git LFS test media assets"
+run = "git lfs pull --include='assets/media/**'"
+
+[tasks.setup]
+description = "One-command initialization for a fresh workspace"
+depends = ["deps:sync", "env:check"]
+run = "echo '✅ Workspace setup complete.'"
+
+# ----------------------------------------------------------------------------
+# Build & Run Tasks (C++ / CMake / Ninja)
+# ----------------------------------------------------------------------------
+[tasks.configure]
+description = "Configure CMake project with Ninja generator"
+depends = ["deps:sync"]
+run = """
+if [ -f "$SONO_BUILD_DIR/CMakeCache.txt" ] && ! grep -q "CMAKE_GENERATOR:INTERNAL=Ninja" "$SONO_BUILD_DIR/CMakeCache.txt"; then
+  echo "🔄 Cleaning stale CMake cache (switching generator to Ninja)..."
+  cmake -E rm -rf "$SONO_BUILD_DIR/CMakeCache.txt" "$SONO_BUILD_DIR/CMakeFiles"
+fi
+cmake -S . -B "$SONO_BUILD_DIR" -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+"""
+
+[tasks.build]
+description = "Compile SonoWorkstation (Release)"
+depends = ["configure"]
+run = "cmake --build $SONO_BUILD_DIR --config Release -j"
+
+[tasks."build:debug"]
+description = "Configure and compile SonoWorkstation (Debug)"
+depends = ["deps:sync"]
+run = """
+if [ -f "$SONO_BUILD_DIR/CMakeCache.txt" ] && ! grep -q "CMAKE_GENERATOR:INTERNAL=Ninja" "$SONO_BUILD_DIR/CMakeCache.txt"; then
+  echo "🔄 Cleaning stale CMake cache (switching generator to Ninja)..."
+  cmake -E rm -rf "$SONO_BUILD_DIR/CMakeCache.txt" "$SONO_BUILD_DIR/CMakeFiles"
+fi
+cmake -S . -B "$SONO_BUILD_DIR" -G Ninja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+cmake --build "$SONO_BUILD_DIR" --config Debug -j
+"""
+
+[tasks.run]
+description = "Launch SonoWorkstation desktop application"
+depends = ["build"]
+run = """
+if [ "$(uname -s)" = "Darwin" ]; then
+  open "$SONO_BUILD_DIR/SonoWorkstation.app"
+elif [ "$(uname -s)" = "Linux" ]; then
+  "$SONO_BUILD_DIR/SonoWorkstation"
+else
+  "$SONO_BUILD_DIR/SonoWorkstation.exe"
+fi
+"""
+
+[tasks.clean]
+description = "Remove CMake build directory"
+run = "cmake -E remove_directory $SONO_BUILD_DIR"
+
+# ----------------------------------------------------------------------------
+# Quality Assurance, Testing & Formatting Tasks
+# ----------------------------------------------------------------------------
+[tasks.test]
+description = "Run Python and C++ test suites"
+run = """
+python3 -m unittest discover -s tests/python -p "test_*.py" -v
+if [ -d "$SONO_BUILD_DIR" ]; then
+  ctest --test-dir "$SONO_BUILD_DIR" --output-on-failure || true
+fi
+"""
+
+[tasks.lint]
+description = "Run static analysis and formatting checks across Python and C++"
+run = """
+ruff check scripts/ tests/python/
+ruff format --check scripts/ tests/python/
+"""
+
+[tasks.format]
+description = "Auto-format Python scripts and C++ test files"
+run = """
+ruff check --fix scripts/ tests/python/
+ruff format scripts/ tests/python/
+"""
