@@ -1,0 +1,96 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "version": "1.0.0",
+  "description": "External binary SDKs (CEF, ONNX Runtime) and downloadable AI model artifacts for SonoWorkstation",
+  "variables": {
+    "CEF_BASE_URL": "https://cef-builds.spotifycdn.com",
+    "CEF_VERSION": "154.0.34+g14c5a08+chromium-154.0.8037.98",
+    "CEF_VERSION_URLENC": "154.0.34%2Bg14c5a08%2Bchromium-154.0.8037.98",
+    "ORT_BASE_URL": "https://github.com/microsoft/onnxruntime/releases/download",
+    "MODEL_REPO_URL": "https://github.com/leecervan904/ai_assist_pc",
+    "MODEL_RELEASE_TAG": "models-v1.0.0"
+  },
+  "sdks": {
+    "cef": {
+      "version": "154.0.34+g14c5a08+chromium-154.0.8037.98",
+      "upstream_index": "https://cef-builds.spotifycdn.com/index.html",
+      "description": "Official Chromium Embedded Framework Standard Binary Distribution",
+      "targets": {
+        "darwin-arm64": {
+          "url": "${CEF_BASE_URL}/cef_binary_${CEF_VERSION_URLENC}_macosarm64.tar.bz2",
+          "sha256": "SKIP_IF_LOCAL_EXISTS",
+          "strip_components": 1,
+          "dest": ".deps/cef",
+          "verify_path": "Release/Chromium Embedded Framework.framework/Chromium Embedded Framework"
+        },
+        "darwin-x64": {
+          "url": "${CEF_BASE_URL}/cef_binary_${CEF_VERSION_URLENC}_macosx64.tar.bz2",
+          "sha256": "SKIP_IF_LOCAL_EXISTS",
+          "strip_components": 1,
+          "dest": ".deps/cef",
+          "verify_path": "Release/Chromium Embedded Framework.framework/Chromium Embedded Framework"
+        },
+        "windows-x64": {
+          "url": "${CEF_BASE_URL}/cef_binary_${CEF_VERSION_URLENC}_windows64.tar.bz2",
+          "sha256": "SKIP_IF_LOCAL_EXISTS",
+          "strip_components": 1,
+          "dest": ".deps/cef",
+          "verify_path": "Release/libcef.dll"
+        },
+        "linux-x64": {
+          "url": "${CEF_BASE_URL}/cef_binary_${CEF_VERSION_URLENC}_linux64.tar.bz2",
+          "sha256": "SKIP_IF_LOCAL_EXISTS",
+          "strip_components": 1,
+          "dest": ".deps/cef",
+          "verify_path": "Release/libcef.so"
+        },
+        "linux-arm64": {
+          "url": "${CEF_BASE_URL}/cef_binary_${CEF_VERSION_URLENC}_linuxarm64.tar.bz2",
+          "sha256": "SKIP_IF_LOCAL_EXISTS",
+          "strip_components": 1,
+          "dest": ".deps/cef",
+          "verify_path": "Release/libcef.so"
+        }
+      }
+    },
+    "onnxruntime": {
+      "version": "1.22.0 (Win) / 1.31.0 (Linux)",
+      "upstream_index": "https://github.com/microsoft/onnxruntime/releases",
+      "description": "Official Microsoft ONNX Runtime C/C++ Prebuilt Releases",
+      "targets": {
+        "windows-x64": {
+          "url": "${ORT_BASE_URL}/v1.22.0/onnxruntime-win-x64-1.22.0.zip",
+          "sha256": "SKIP_IF_LOCAL_EXISTS",
+          "strip_components": 1,
+          "dest": ".deps/onnxruntime",
+          "verify_path": "lib/onnxruntime.dll"
+        },
+        "linux-x64": {
+          "url": "${ORT_BASE_URL}/v1.31.0/onnxruntime-linux-x64-1.31.0.tgz",
+          "sha256": "SKIP_IF_LOCAL_EXISTS",
+          "strip_components": 1,
+          "dest": ".deps/onnxruntime",
+          "verify_path": "lib/libonnxruntime.so.1.31.0"
+        }
+      }
+    }
+  },
+  "models": {
+    "thyroid": {
+      "version": "1.0.0",
+      "description": "Thyroid ultrasound segmentation & detection ONNX model",
+      "url": "${MODEL_REPO_URL}/releases/download/${MODEL_RELEASE_TAG}/thyroid.onnx",
+      "sha256": "dd0ec4e5c1528c48ab3e39d5f4d8749c9cf709a8159e45a8eae48b99e6b27fd5",
+      "dest": "assets/models/thyroid.onnx",
+      "config": "assets/models/thyroid.ini"
+    },
+    "XT-7-640": {
+      "version": "1.0.0",
+      "description": "XT-7-640 YOLOv8 ultrasound detection ONNX model",
+      "url": "${MODEL_REPO_URL}/releases/download/${MODEL_RELEASE_TAG}/XT-7-640.onnx",
+      "sha256": "2f745f40433e7cf72ceaebadb653b3855a1c874537bdbd02fe48b85c3f203e0e",
+      "dest": "assets/models/XT-7-640.onnx",
+      "config": "assets/models/XT-7-640.ini"
+    }
+  }
+}

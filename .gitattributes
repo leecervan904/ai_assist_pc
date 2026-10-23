@@ -1,0 +1,28 @@
+# ============================================================================
+# Git Attributes & On-Demand Git LFS Configuration
+# ============================================================================
+# Default text handling
+* text=auto eol=lf
+
+# Force LF for shell scripts and patches
+*.sh text eol=lf
+*.py text eol=lf
+*.cmake text eol=lf
+CMakeLists.txt text eol=lf
+
+# Force CRLF for Windows batch scripts
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Binary files
+*.png binary
+*.jpg binary
+*.ico binary
+*.icns binary
+
+# ----------------------------------------------------------------------------
+# Git LFS: On-Demand for cross-platform test media assets only.
+# Note: CEF, ONNX Runtime and external ONNX model downloads are declared by
+# deps/manifest.json. Model files themselves are never committed here.
+# ----------------------------------------------------------------------------
+assets/media/*.mp4 filter=lfs diff=lfs merge=lfs -text
